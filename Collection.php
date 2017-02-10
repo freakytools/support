@@ -68,58 +68,21 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
         return $this->items;
     }
 
-    private $simplified;
-
+    /**
+     * Convert array of keys and values to array of values.
+     *
+     * @return array
+     */
     public function simplify()
-    {                 
-        $copy = json_decode($this, true);
-        $this->simplifyCollection($copy);
-        return $this->simplified;
-    }
+    {
+        $result = [];
 
-    private function simplifyCollection(&$collection) {
-        foreach ($collection as $key => &$value) {
-            if ($this->isSingleFieldObject($value)){
-                $this->modifyToSimpleArray($collection);
-                unset($value);
-                $this->simplified = $collection;
-                return;
-            if ($this->isArrayOfSingleFieldObjects($value)) {
-                $value = $this->modifyToSimpleArray($value); 
-            } else if (is_array($value) || is_object($value)) {
-                $this->simplifyCollection($value);
-            }                           }
-        }
-        unset($value);
-        $this->simplified = $collection;
-    }
+        foreach (json_decode($this) as $item) 
+            foreach ($item as $k => $v)
+                array_push($result, $v);
+        
 
-    private function isArrayOfSingleFieldObjects($array) {
-        if (!is_array($array))
-            return false;
-        foreach ($array as $key => $value) {
-            if (!is_object($value) && !is_array($value)) {
-                return false; }
-            else if (count($value) > 1) {
-                return false; }
-            else return true;
-        }
-    }
-
-    private function isSingleFieldObject($value) {
-        if (!is_object($value) && !is_array($value))
-            return false;
-        if (count($value) > 1) 
-            return false; 
-        else return true;
-    }
-
-    private function modifyToSimpleArray(&$array) {
-        foreach ($array as $key => &$value) {
-            $value = array_shift($value);
-        }
-        unset($value);
-        return($array);
+        return $result;
     }
 
     /**
