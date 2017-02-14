@@ -1341,7 +1341,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * @param  int  $options
      * @return string
      */
-    public function toJson($options = 0)
+    public function toJson($options = 256)
     {
         return json_encode($this->jsonSerialize(), $options);
     }
